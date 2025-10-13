@@ -23,6 +23,7 @@ class BVC_Admin_Helper
     {
         add_action('admin_init', array($this, 'create_userrole'), 20);
         add_action('admin_head', array($this, 'remove_admin_menu'), 999);
+        add_action('admin_head', array($this, 'redirect_site_admin'));
 
         if ($this->user_auth()) {
             add_filter('manage_users_columns', array($this, 'add_user_table_column'));
@@ -51,6 +52,20 @@ class BVC_Admin_Helper
         return $value;
     }
 
+    public function redirect_site_admin()
+    {
+        if ($this->user_auth()) {
+            $screen = get_current_screen();
+
+            if (isset($screen->base)) {
+                if ($screen->base == 'dashboard') {
+                    wp_safe_redirect(admin_url('users.php?role=carer'));
+                    exit;
+                }
+            }
+        }
+    }
+
     public function remove_admin_menu()
     {
         $screen = get_current_screen();
@@ -72,6 +87,10 @@ class BVC_Admin_Helper
                 #adminmenu li#toplevel_page_bvc-customer,
                 #adminmenu li#toplevel_page_bvc-carer {
                     display: block !important;
+                }
+
+                #screen-meta-links {
+                    display: none;
                 }
             </style>
             <?php
