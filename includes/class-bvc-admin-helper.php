@@ -182,7 +182,6 @@ class BVC_Admin_Helper
     {
         // remove_role('site_manager');
 
-
         // $admin_role = get_role('administrator');
         // if ($admin_role) {
         //     add_role('site_admin', 'Site Admin', $admin_role->capabilities);

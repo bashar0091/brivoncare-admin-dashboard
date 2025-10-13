@@ -134,5 +134,8 @@ new BrivonCare_Admin_Dashboard();
 register_activation_hook(__FILE__, 'bvc_dashboard_activate');
 function bvc_dashboard_activate()
 {
-    // Perform any necessary setup on activation
+    $admin_role = get_role('administrator');
+    if ($admin_role) {
+        add_role('site_admin', 'Site Admin', $admin_role->capabilities);
+    }
 }
