@@ -27,6 +27,7 @@ define('BVC_DASHBOARD_URL', plugin_dir_url(__FILE__));
  */
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-admin-pages.php';
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-ajax-handler.php';
+require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-applicant-column.php';
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-admin-helper.php';
 require_once BVC_DASHBOARD_PATH . 'includes/logger.php';
 
@@ -89,7 +90,7 @@ class BrivonCare_Admin_Dashboard
             );
             add_menu_page(
                 __('Customers', 'bvc-dashboard'),
-                __('Customer', 'bvc-dashboard'),
+                __('Customer / Job', 'bvc-dashboard'),
                 'manage_options',
                 'bvc-customer',
                 array($page_renderer, 'render_customers_page'),

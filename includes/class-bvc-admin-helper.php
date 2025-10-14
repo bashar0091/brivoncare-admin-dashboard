@@ -4,6 +4,26 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// 1. Add a new column to the CCT admin list
+add_filter('jet-engine/admin-list-table/columns', function ($columns, $list_table_id) {
+    if ('apply_for_a_job' === $list_table_id) { // your admin page ID
+        $columns['custom_info'] = [
+            'title' => 'Custom Info',
+            'type'  => 'text',
+        ];
+    }
+    return $columns;
+}, 10, 2);
+
+add_filter('jet-engine/admin-list-table/column-value', function ($value, $column, $item_id, $list_table_id) {
+    if ('apply_for_a_job' === $list_table_id && 'custom_info' === $column) {
+        return get_post_meta($item_id, '_custom_meta_key', true);
+    }
+    return $value;
+}, 10, 4);
+
+
+
 class BVC_Admin_Helper
 {
 
@@ -25,15 +45,37 @@ class BVC_Admin_Helper
         add_action('admin_init', array($this, 'create_userrole'), 20);
         add_action('admin_head', array($this, 'remove_admin_menu'), 999);
         add_action('admin_head', array($this, 'redirect_site_admin'));
-        add_action('wp_head', array($this, 'hide_admin_toolbar'));
         add_action('admin_footer', array($this, 'conditionally_active_class_in_side_menu'));
         add_filter('login_redirect', array($this, 'login_redirect_site_admin'), 10, 3);
         add_action('check_admin_referer', array($this, 'logout_without_confirm'), 10, 2);
 
         if ($this->user_auth()) {
+            add_action('wp_head', array($this, 'hide_admin_toolbar'));
             add_filter('manage_users_columns', array($this, 'add_user_table_column'));
             add_filter('manage_users_columns', [$this, 'remove_table_columns'], 999);
             add_filter('manage_users_custom_column', array($this, 'show_user_table_column_content'), 10, 3);
+
+            add_filter('manage_elder-profile_posts_columns', array($this, 'add_elder_profile_columns'));
+            add_action('manage_elder-profile_posts_custom_column', array($this, 'populate_elder_profile_columns'), 10, 2);
+        }
+    }
+
+    public function add_elder_profile_columns($columns)
+    {
+        $columns['phone'] = __('Phone', 'textdomain');
+        $columns['email'] = __('Email', 'textdomain');
+        return $columns;
+    }
+
+    public function populate_elder_profile_columns($column, $post_id)
+    {
+        if ('phone' === $column) {
+            $custom_value = get_post_meta($post_id, 'phone', true);
+            echo $custom_value ? esc_html($custom_value) : '—';
+        }
+        if ('email' === $column) {
+            $custom_value = get_post_meta($post_id, 'email', true);
+            echo $custom_value ? esc_html($custom_value) : '—';
         }
     }
 
@@ -426,6 +468,10 @@ class BVC_Admin_Helper
                 .type-elder-profile .row-actions .hide-if-no-js,
                 .type-elder-profile .row-actions .view {
                     display: none !important;
+                }
+
+                #wpcontent.bvc-collapse {
+                    margin-left: 100px !important;
                 }
             </style>
 

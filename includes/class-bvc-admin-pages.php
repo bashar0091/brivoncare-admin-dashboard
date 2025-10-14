@@ -22,9 +22,19 @@ class BVC_Admin_Pages
             return;
         }
 
-        $redirect_url = admin_url('admin.php?page=jet-cct-apply_for_a_job');
-        wp_redirect($redirect_url);
-        exit;
+?>
+        <div class="wrap">
+            <form method="get">
+                <input type="hidden" name="page" value="job-applications" />
+                <?php
+                $table = new Job_Applications_Table();
+                $table->prepare_items();
+                $table->search_box('Search Applications', 'job-search');
+                $table->display();
+                ?>
+            </form>
+        </div>
+<?php
     }
     public function render_customers_page()
     {
