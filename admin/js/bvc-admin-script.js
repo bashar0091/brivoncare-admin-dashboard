@@ -1,54 +1,47 @@
 jQuery(document).ready(function($) {
-    $('.bvc-verify-carer-btn').on('click', function(e) {
-        e.preventDefault();
+    var $adminWrapper = $("#adminmenuwrap");
+    if ($adminWrapper.length) {
+      var $customDiv = $("<div>", {
+        id: "custom-admin-logo",
+        css: {
+          textAlign: "center",
+          padding: "10px",
+        },
+      });
 
-        var $button = $(this);
-        var carerId = $button.data('carer-id');
-        var $row = $('#carer-row-' + carerId);
-        var $spinner = $button.next('.spinner');
-        var $message = $('#bvc-ajax-message');
+      var $a_tag = $("<a>", {
+        href: window.location.origin + "/wp-admin/users.php?role=carer",
+      });
 
-        // Disable button and show spinner
-        $button.prop('disabled', true).addClass('button-secondary');
-        $spinner.css('visibility', 'visible');
-        $message.hide().removeClass('notice-success notice-error');
+      var $img = $("<img>", {
+        src:
+          window.location.origin +
+          "/wp-content/plugins/brivoncare-admin-dashboard/admin/assets/img/logo.png",
+        css: {
+          width: "150px",
+          height: "auto",
+        },
+      });
 
-        $.ajax({
-            url: bvc_ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'bvc_verify_carer',
-                nonce: bvc_ajax_object.nonce,
-                carer_id: carerId
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Update table row with new status
-                    var statusHtml = '<span class="carer-status-verified">' + response.data.new_status + '</span>';
-                    $row.find('.carer-status-col').html(statusHtml);
-                    
-                    // Remove the button and spinner
-                    $button.remove();
-                    $spinner.remove();
+      var $wpIcon = $("<span>", {
+        class: "dashicons dashicons-menu-alt3",
+        id: "bvc-side-menu-togger",
+        css: {
+          fontSize: "35px",
+          color: "#12133a",
+        },
+      });
 
-                    // Display success message
-                    $message.addClass('notice-success').html('<p>' + response.data.message + '</p>').show();
-                } else {
-                    // Display error message
-                    $message.addClass('notice-error').html('<p>' + response.data.message + '</p>').show();
-                }
-            },
-            error: function(xhr, status, error) {
-                // Display generic error
-                $message.addClass('notice-error').html('<p>An unexpected error occurred: ' + error + '</p>').show();
-            },
-            complete: function() {
-                // Re-enable button on error, hide spinner
-                if ($button.length) {
-                    $button.prop('disabled', false).removeClass('button-secondary');
-                }
-                $spinner.css('visibility', 'hidden');
-            }
-        });
+       $a_tag.append($img);
+       $customDiv.append($a_tag, $wpIcon);
+       $adminWrapper.prepend($customDiv);
+    }
+
+    $("#adminmenumain .screen-reader-shortcut").remove();
+
+    $("#bvc-side-menu-togger").on("click", function () {
+      $("#adminmenumain").toggleClass("bvc-collapse");
+      $("#wpcontent").toggleClass("bvc-collapse");
     });
+
 });

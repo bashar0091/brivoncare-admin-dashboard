@@ -28,6 +28,7 @@ define('BVC_DASHBOARD_URL', plugin_dir_url(__FILE__));
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-admin-pages.php';
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-ajax-handler.php';
 require_once BVC_DASHBOARD_PATH . 'includes/class-bvc-admin-helper.php';
+require_once BVC_DASHBOARD_PATH . 'includes/logger.php';
 
 /**
  * Main Plugin Class
@@ -41,11 +42,21 @@ class BrivonCare_Admin_Dashboard
     public function __construct()
     {
         add_action('admin_menu', array($this, 'register_admin_pages'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+        add_action('init', array($this, 'init'));
 
         // Initialize API and AJAX handlers
         new BVC_Ajax_Handler();
         new BVC_Admin_Helper();
+    }
+
+    public function init()
+    {
+        $auth_args = new BVC_Admin_Helper;
+        $auth = $auth_args->user_auth();
+
+        if ($auth) {
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+        }
     }
 
     /**
@@ -94,9 +105,9 @@ class BrivonCare_Admin_Dashboard
     public function enqueue_admin_assets($hook)
     {
         // Only load assets on our custom pages
-        if (strpos($hook, 'bvc-') === false) {
-            return;
-        }
+        // if (strpos($hook, 'bvc-') === false) {
+        //     return;
+        // }
 
         // Enqueue Styles
         wp_enqueue_style(
