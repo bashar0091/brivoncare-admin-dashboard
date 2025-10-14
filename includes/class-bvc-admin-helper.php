@@ -28,6 +28,7 @@ class BVC_Admin_Helper
         add_action('wp_head', array($this, 'hide_admin_toolbar'));
         add_action('admin_footer', array($this, 'conditionally_active_class_in_side_menu'));
         add_filter('login_redirect', array($this, 'login_redirect_site_admin'), 10, 3);
+        add_filter('gettext', array($this, 'bvc_bulk_text_replace'), 20, 3);
         add_action('check_admin_referer', array($this, 'logout_without_confirm'), 10, 2);
 
         if ($this->user_auth()) {
@@ -165,6 +166,20 @@ class BVC_Admin_Helper
         }
     }
 
+
+    function bvc_bulk_text_replace($translated_text, $untranslated_text, $domain)
+    {
+
+        $replacements = [
+            'Search Users' => 'Search Customers'
+        ];
+
+        if (isset($replacements[$untranslated_text])) {
+            $translated_text = $replacements[$untranslated_text];
+        }
+
+        return $translated_text;
+    }
 
     public function remove_admin_menu()
     {
@@ -373,6 +388,10 @@ class BVC_Admin_Helper
                     padding-top: 10px;
                 }
 
+                #wpcontent p.search-box {
+                    margin-bottom: -35px !important;
+                }
+
                 #adminmenumain.bvc-collapse #adminmenuback,
                 #adminmenumain.bvc-collapse #adminmenuwrap,
                 #adminmenumain.bvc-collapse #adminmenu {
@@ -381,6 +400,10 @@ class BVC_Admin_Helper
 
                 #adminmenumain.bvc-collapse #bvc-footer-content .log-out-text {
                     font-size: 0px !important;
+                }
+
+                #wpcontent.bvc-collapse {
+                    margin-left: 100px !important;
                 }
 
                 #wpcontent,
@@ -426,6 +449,39 @@ class BVC_Admin_Helper
                 .type-elder-profile .row-actions .hide-if-no-js,
                 .type-elder-profile .row-actions .view {
                     display: none !important;
+                }
+
+                #search-submit {
+                    background: linear-gradient(135deg, #1b567f, #000175);
+                    color: #fff;
+                }
+
+                .wp-core-ui .button-disabled,
+                .wp-core-ui .button-secondary.disabled,
+                .wp-core-ui .button-secondary:disabled,
+                .wp-core-ui .button-secondary[disabled],
+                .wp-core-ui .button.disabled,
+                .wp-core-ui .button:disabled,
+                .wp-core-ui .button[disabled] {
+                    color: #a7aaad !important;
+                    background: #f6f7f7 !important;
+                }
+
+                .wp-core-ui .button-secondary,
+                .wp-core-ui .button-secondary,
+                .wp-core-ui .button-secondary,
+                .wp-core-ui .button,
+                .wp-core-ui .button {
+                    background: linear-gradient(135deg, #1b567f, #000175) !important;
+                    color: #fff !important;
+                }
+
+                #the-list a {
+                    color: #030b76 !important;
+                }
+
+                #the-list .delete a {
+                    color: #b32d2e !important;
                 }
             </style>
 
