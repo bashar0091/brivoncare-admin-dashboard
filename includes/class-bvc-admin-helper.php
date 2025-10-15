@@ -163,12 +163,11 @@ class BVC_Admin_Helper
         $current_user_email = wp_get_current_user()->user_email;
 
         $active_id = '';
-
         switch ($screen->parent_file) {
             case 'users.php':
                 $active_id = 'toplevel_page_bvc-carer';
                 break;
-            case 'jet-cct-apply_for_a_job':
+            case 'bvc-application':
                 $active_id = 'toplevel_page_bvc-application';
                 break;
             case 'edit.php?post_type=elder-profile':
