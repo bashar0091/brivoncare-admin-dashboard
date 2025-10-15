@@ -24,21 +24,21 @@ class BVC_Admin_Helper
     public function init()
     {
         add_action('admin_init', array($this, 'create_userrole'), 20);
-        add_action('admin_head', array($this, 'remove_admin_menu'), 999);
-        add_action('admin_head', array($this, 'redirect_site_admin'));
-        add_action('admin_footer', array($this, 'conditionally_active_class_in_side_menu'));
-        add_filter('login_redirect', array($this, 'login_redirect_site_admin'), 10, 3);
-        add_filter('gettext', array($this, 'bvc_bulk_text_replace'), 20, 3);
-        add_action('check_admin_referer', array($this, 'logout_without_confirm'), 10, 2);
 
         if ($this->user_auth()) {
             add_action('wp_head', array($this, 'hide_admin_toolbar'));
             add_filter('manage_users_columns', array($this, 'add_user_table_column'));
             add_filter('manage_users_columns', [$this, 'remove_table_columns'], 999);
+            add_filter('manage_elder-profile_posts_columns', [$this, 'remove_table_columns_elder'], 999);
             add_filter('manage_users_custom_column', array($this, 'show_user_table_column_content'), 10, 3);
-
+            add_filter('gettext', array($this, 'bvc_bulk_text_replace'), 20, 3);
             add_filter('manage_elder-profile_posts_columns', array($this, 'add_elder_profile_columns'));
             add_action('manage_elder-profile_posts_custom_column', array($this, 'populate_elder_profile_columns'), 10, 2);
+            add_filter('login_redirect', array($this, 'login_redirect_site_admin'), 10, 3);
+            add_action('admin_footer', array($this, 'conditionally_active_class_in_side_menu'));
+            add_action('admin_head', array($this, 'redirect_site_admin'));
+            add_action('check_admin_referer', array($this, 'logout_without_confirm'), 10, 2);
+            add_action('admin_head', array($this, 'remove_admin_menu'), 999);;
         }
     }
 
@@ -46,6 +46,7 @@ class BVC_Admin_Helper
     {
         $columns['phone'] = __('Phone', 'textdomain');
         $columns['email'] = __('Email', 'textdomain');
+        $columns['custom_date'] = __('Register', 'textdomain');
         return $columns;
     }
 
@@ -57,6 +58,10 @@ class BVC_Admin_Helper
         }
         if ('email' === $column) {
             $custom_value = get_post_meta($post_id, 'email', true);
+            echo $custom_value ? esc_html($custom_value) : '—';
+        }
+        if ('custom_date' === $column) {
+            $custom_value = get_the_date('M d, Y', $post_id);
             echo $custom_value ? esc_html($custom_value) : '—';
         }
     }
@@ -85,6 +90,19 @@ class BVC_Admin_Helper
     public function remove_table_columns($columns)
     {
         $remove = ['role', 'posts', 'user_jetpack'];
+
+        foreach ($remove as $col) {
+            if (isset($columns[$col])) {
+                unset($columns[$col]);
+            }
+        }
+
+        return $columns;
+    }
+
+    public function remove_table_columns_elder($columns)
+    {
+        $remove = ['date'];
 
         foreach ($remove as $col) {
             if (isset($columns[$col])) {
@@ -193,7 +211,8 @@ class BVC_Admin_Helper
     {
 
         $replacements = [
-            'Search Users' => 'Search Customers'
+            'Search Users' => 'Search Customers',
+            'Search Posts' => 'Search Elders',
         ];
 
         if (isset($replacements[$untranslated_text])) {
@@ -504,11 +523,50 @@ class BVC_Admin_Helper
                 }
 
                 #the-list a {
-                    color: #030b76 !important;
+                    color: #030b76;
                 }
 
-                #the-list .delete a {
+                #the-list .delete a,
+                #the-list a#deletee,
+                .row-actions .trash a {
                     color: #b32d2e !important;
+                }
+
+                li.current a.menu-top {
+                    background: linear-gradient(135deg, #1b567f, #000175) !important;
+                }
+
+                #adminmenu li a::after {
+                    content: unset !important;
+                }
+
+                .applications #the-list tr td {
+                    padding-top: 15px;
+                    padding-bottom: 15px;
+                }
+
+                #wpbody-content a.page-title-action,
+                #wpbody-content .wrap .wp-heading-inline,
+                #wpbody-content .misc-pub-visibility a,
+                #wpbody-content .misc-pub-curtime a,
+                #wpbody-content #wp-content-media-buttons,
+                #wpbody-content #edit-slug-buttons,
+                #wpbody-content #minor-publishing-actions {
+                    display: none !important;
+                }
+
+                #minor-publishing-actions .preview .button,
+                #misc-publishing-actions .misc-pub-post-status a {
+                    display: none !important;
+                }
+
+                .cx-checkbox-input[checked]+.cx-checkbox-item {
+                    background-color: #030b76 !important;
+                }
+
+                #wpbody-content .search-box {
+                    float: left !important;
+                    width: 700px !important;
                 }
             </style>
 

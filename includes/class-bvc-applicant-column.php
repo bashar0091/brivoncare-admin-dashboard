@@ -46,7 +46,7 @@ class Job_Applications_Table extends WP_List_Table
 
             case 'cct_created':
                 // Show only date
-                $date = date('Y-m-d', strtotime($item['cct_created']));
+                $date = date('M d, Y', strtotime($item['cct_created']));
                 return esc_html($date);
 
             case 'last_name':
@@ -68,7 +68,6 @@ class Job_Applications_Table extends WP_List_Table
     }
 
     // Action column
-    // Action column
     function column_action($item)
     {
         // Edit URL points to your edit page
@@ -81,7 +80,7 @@ class Job_Applications_Table extends WP_List_Table
         );
 
         return sprintf(
-            '<a href="%s">Edit</a> | <a href="%s" onclick="return confirm(\'Are you sure you want to delete this application?\')">Delete</a>',
+            '<a href="%s">Edit</a> | <a id="deletee" href="%s" onclick="return confirm(\'Are you sure you want to delete this application?\')">Delete</a>',
             esc_url($edit_url),
             esc_url($delete_url)
         );
