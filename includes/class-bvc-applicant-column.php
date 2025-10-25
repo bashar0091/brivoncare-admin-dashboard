@@ -104,12 +104,7 @@ class Job_Applications_Table extends WP_List_Table
     }
 
     // Bulk actions
-    function get_bulk_actions()
-    {
-        return [
-            'delete' => 'Delete',
-        ];
-    }
+    function get_bulk_actions() {}
 
     // Prepare items
     function prepare_items()
@@ -151,3 +146,20 @@ class Job_Applications_Table extends WP_List_Table
         $this->items = $results;
     }
 }
+
+add_action('admin_init', function () {
+    if (isset($_GET['cct_action'], $_GET['item_id']) && $_GET['cct_action'] === 'delete') {
+        $item_id = intval($_GET['item_id']);
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'delete_application_' . $item_id)) {
+            wp_die('Nonce verification failed');
+        }
+
+        global $wpdb;
+        $table = $wpdb->prefix . 'jet_cct_apply_for_a_job';
+        $wpdb->delete($table, ['_ID' => $item_id], ['%d']);
+
+        $redirect_url = admin_url('admin.php?page=bvc-application');
+        wp_redirect($redirect_url);
+        exit;
+    }
+});

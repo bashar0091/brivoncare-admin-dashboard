@@ -97,6 +97,15 @@ class BrivonCare_Admin_Dashboard
                 'dashicons-groups',
                 5
             );
+            add_menu_page(
+                __('Message', 'bvc-dashboard'),
+                __('Message', 'bvc-dashboard'),
+                'manage_options',
+                'bvc-message',
+                array($page_renderer, 'render_message_page'),
+                'dashicons-format-chat',
+                6
+            );
         }
     }
 

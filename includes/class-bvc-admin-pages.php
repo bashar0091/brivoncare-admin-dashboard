@@ -46,4 +46,15 @@ class BVC_Admin_Pages
         wp_redirect($redirect_url);
         exit;
     }
+
+    public function render_message_page()
+    {
+        if (! current_user_can('manage_options')) {
+            return;
+        }
+
+        echo '<div style="padding: 20px 20px 20px 0;">';
+        echo do_shortcode('[eldercare_messaging]');
+        echo '</div>';
+    }
 }
